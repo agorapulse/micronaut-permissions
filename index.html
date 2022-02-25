@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.10">
+<meta name="author" content="Vladimir Orany">
+<title>Micronaut Permissions Library</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<link rel="stylesheet" href="./asciidoctor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+.hidden {
+    display: none;
+}
+
+.switch {
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-color: #7a2518;
+    display: inline-block;
+}
+
+.switch--item {
+    padding: 10px;
+    background-color: #ffffff;
+    color: #7a2518;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.switch--item.selected {
+    background-color: #7a2519;
+    color: #ffffff;
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+<script type="text/javascript">
+function addBlockSwitches() {
+    $('.primary').each(function() {
+        primary = $(this);
+        createSwitchItem(primary, createBlockSwitch(primary)).item.addClass("selected");
+        primary.children('.title').remove();
+    });
+    $('.secondary').each(function(idx, node) {
+        secondary = $(node);
+        primary = findPrimary(secondary);
+        switchItem = createSwitchItem(secondary, primary.children('.switch'));
+        switchItem.content.addClass('hidden');
+        findPrimary(secondary).append(switchItem.content);
+        secondary.remove();
+    });
+}
+
+function createBlockSwitch(primary) {
+    blockSwitch = $('<div class="switch"></div>');
+    primary.prepend(blockSwitch);
+    return blockSwitch;
+}
+
+function findPrimary(secondary) {
+    candidate = secondary.prev();
+    while (!candidate.is('.primary')) {
+        candidate = candidate.prev();
+    }
+    return candidate;
+}
+
+function createSwitchItem(block, blockSwitch) {
+    blockName = block.children('.title').text();
+    content = block.children('.content').first().append(block.next('.colist'));
+    item = $('<div class="switch--item">' + blockName + '</div>');
+    item.on('click', '', content, function(e) {
+        $(this).addClass('selected');
+        $(this).siblings().removeClass('selected');
+        e.data.siblings('.content').addClass('hidden');
+        e.data.removeClass('hidden');
+    });
+    blockSwitch.append(item);
+    return {'item': item, 'content': content};
+}
+
+$(addBlockSwitches);
+
+</script>
+
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>Micronaut Permissions Library</h1>
+<div class="details">
+<span id="author" class="author">Vladimir Orany</span><br>
+<span id="revnumber">version 1.0.0-micronaut-3.0</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_installation_">1. Installation</a></li>
+<li><a href="#_usage">2. Usage</a>
+<ul class="sectlevel2">
+<li><a href="#_require_permissions">2.1. Require Permissions</a></li>
+<li><a href="#_permission_advisors">2.2. Permission Advisors</a></li>
+<li><a href="#_exception_handling">2.3. Exception Handling</a></li>
+<li><a href="#_user_retrieval">2.4. User Retrieval</a></li>
+<li><a href="#_granting_permissions">2.5. Granting Permissions</a></li>
+</ul>
+</li>
+<li><a href="#_links">3. Links</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_installation_"><a class="anchor" href="#_installation_"></a>1. Installation</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code>repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implemenation 'com.agorapulse:micronaut-permissions:{project-version}'
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage"><a class="anchor" href="#_usage"></a>2. Usage</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The typical example is guaranteeing that only the creator of an object can edit its properties. Let&#8217;s imagine a social network which publishes posts:</p>
+</div>
+<div class="listingblock">
+<div class="title">Post.java</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">public class Post {
+
+    public enum Status { DRAFT, PUBLISHED, ARCHIVED }
+
+    public static Post createDraft(Long authorId, String message) {
+        return new Post(null, authorId, message, Status.DRAFT);
+    }
+
+    private Long id;
+    private final Status status;
+    private final Long authorId;
+    private final String message;
+
+    private Post(Long id, Long authorId, String message, Status status) {
+        this.id = id;
+        this.authorId = authorId;
+        this.message = message;
+        this.status = status;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    void setId(Long id) {
+        this.id = id;
+    }
+
+    Post publish() {
+        return new Post(id, authorId, message, Status.PUBLISHED);
+    }
+
+    Post archive() {
+        return new Post(id, authorId, message, Status.ARCHIVED);
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Only the author of the <code>Post</code> can update its state to either <code>publish</code> it or <code>archive</code> it. This can be achieved by
+annotating the particular service methods with <code>@RequiresPermissions</code> annotation.</p>
+</div>
+<div class="sect2">
+<h3 id="_require_permissions"><a class="anchor" href="#_require_permissions"></a>2.1. Require Permissions</h3>
+<div class="listingblock">
+<div class="title">PostService.java</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">import jakarta.inject.Singleton;
+
+@Singleton
+public class PostService {
+
+    public Post create(Long userId, String message) {
+        if (userId == null || userId == 0) {
+            throw new IllegalArgumentException("User not specified");
+        }
+        return Post.createDraft(userId, message);
+    }
+
+    @RequiresPermission("edit")                                                         <i class="conum" data-value="1"></i><b>(1)</b>
+    public Post archive(Post post) {
+        return post.archive();
+    }
+
+    @RequiresPermission("edit")
+    public Post publish(Post post) {
+        return post.publish();
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Require permission <code>edit</code> on the <code>Post</code> object <code>post</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The required permission is any arbitrary <code>String</code>. The semantics are given by specific implementation of the <a href="#_permission_advisors">permission advisor</a>.</p>
+</div>
+<div class="paragraph">
+<p>In case of method having multiple arguments then every argument must pass the verification if particular  <a href="#_permission_advisors">permission advisor</a> is defined.
+There must be <a href="#_permission_advisors">permission advisor</a> defined for at least one fo the arguments.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_permission_advisors"><a class="anchor" href="#_permission_advisors"></a>2.2. Permission Advisors</h3>
+<div class="paragraph">
+<p>The permissions are checked using the beans implementing <code>PermissionAdvisor&lt;T&gt;</code> interface.</p>
+</div>
+<div class="listingblock">
+<div class="title">PermissionAdvisor.java</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">import io.micronaut.core.order.Ordered;
+import io.micronaut.core.type.Argument;
+
+/**
+ * The permission advisor checks the permissions for the given object and the current execution
+ * context.
+ *
+ * @param &lt;T&gt; the type of the objects which permissions are being checked
+ */
+public interface PermissionAdvisor&lt;T&gt; extends Ordered {
+
+    /**
+     * @return the argument type of the objects being checked
+     */
+    Argument&lt;T&gt; argumentType();
+
+    /**
+     * Checks whether the operation described by the &lt;code&gt;permissionDefinition&lt;/code&gt; can be
+     * executed within current execution context on the &lt;code&gt;value&lt;/code&gt; object.
+     *
+     * @param permissionDefinition the string definition of the permission which are being
+     *                            evaluated
+     * @param value the current value being evaluated
+     * @param argument the argument with can be source of additional metadata such as annotations
+     *                being present
+     * @return &lt;code&gt;ALLOW&lt;/code&gt; if the operation is allowed,
+     *      &lt;code&gt;DENY&lt;/code&gt; if the operation is forbidden or
+     *      &lt;code&gt;UNKNOWN&lt;/code&gt; if the result cannot be decided
+     */
+    PermissionCheckResult checkPermissions(
+        String permissionDefinition,
+        T value,
+        Argument&lt;T&gt; argument
+    );
+
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<code>PermissionAdvisor</code> implements <code>Ordered</code> interface, so you can prioritize one advisor over another.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The following advisor will check if the current <code>User</code> is author of the <code>Post</code> instance.</p>
+</div>
+<div class="listingblock">
+<div class="title">EditPostAdvisor.java</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">import io.micronaut.core.type.Argument;
+
+import jakarta.inject.Singleton;
+import java.util.Objects;
+
+@Singleton
+public class EditPostAdvisor implements PermissionAdvisor&lt;Post&gt; {
+
+    private final UserProvider provider;
+
+    public EditPostAdvisor(UserProvider provider) {
+        this.provider = provider;
+    }
+
+    @Override
+    public Argument&lt;Post&gt; argumentType() {
+        return Argument.of(Post.class);                                                 <i class="conum" data-value="1"></i><b>(1)</b>
+    }
+
+    @Override
+    public PermissionCheckResult checkPermissions(
+        String permissionDefinition,
+        Post value,
+        Argument&lt;Post&gt; argument
+    ) {
+        if (provider == null || value == null || !"edit".equals(permissionDefinition)) {
+            return PermissionCheckResult.UNKNOWN;                                       <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+
+        return provider.getCurrentUser().map(u -&gt; {
+            if (Objects.equals(u.getId(), value.getAuthorId())) {
+                return PermissionCheckResult.ALLOW;                                     <i class="conum" data-value="3"></i><b>(3)</b>
+            }
+            return PermissionCheckResult.DENY;                                          <i class="conum" data-value="4"></i><b>(4)</b>
+        }).orElse(PermissionCheckResult.DENY);
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Declare the type of the argument being verified</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Return <code>UNKNOWN</code> if the status cannot be determined, next advisor will be asked for the result</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Return <code>ALLOW</code> if the user <strong>can</strong> perform the requested operation</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Return <code>DENY</code> if the user <strong>cannot</strong> perform the requested operation</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>If any advisor return <code>DENY</code> or every advisor returns <code>UNKNOWN</code> then the <code>PermissionException</code> is thrown.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exception_handling"><a class="anchor" href="#_exception_handling"></a>2.3. Exception Handling</h3>
+<div class="paragraph">
+<p>You can map <code>PermissionException</code> to <code>401 UNAUTHORIZED</code> using the <code>@Error</code> annotation within your HTTP environment.</p>
+</div>
+<div class="listingblock">
+<div class="title">Handling <code>PermissionException</code> in Controller</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">@Error(PermissionException.class)
+public HttpResponse&lt;JsonError&gt; permissionException(PermissionException ex) {
+    return HttpResponse.&lt;JsonError&gt;unauthorized().body(new JsonError(ex.getMessage()));
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_user_retrieval"><a class="anchor" href="#_user_retrieval"></a>2.4. User Retrieval</h3>
+<div class="paragraph">
+<p>There is no predefined interface for retrieving the user but the best practise to create a very simple interface that
+returns an <code>Optional</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">UserProvider.java</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">import java.util.Optional;
+
+public interface UserProvider {
+
+    Optional&lt;User&gt; getCurrentUser();
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then the example implementation can look like the following one:</p>
+</div>
+<div class="listingblock">
+<div class="title">RequestScopeUserProvider.java</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">import io.micronaut.http.context.ServerRequestContext;
+
+import jakarta.inject.Singleton;
+import java.util.Optional;
+
+@Singleton                                                                              <i class="conum" data-value="1"></i><b>(1)</b>
+public class RequestUserProvider implements UserProvider {
+
+    private static final String KEY = "com.agorapulse.user";
+
+    private final UserRepository userRepository;
+
+    public RequestUserProvider(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public Optional&lt;User&gt; getCurrentUser() {
+        return ServerRequestContext.currentRequest().flatMap(request -&gt; {               <i class="conum" data-value="2"></i><b>(2)</b>
+            Optional&lt;User&gt; existingUser = request.getAttribute(KEY, User.class);        <i class="conum" data-value="3"></i><b>(3)</b>
+
+            if (existingUser.isPresent()) {
+                return existingUser;
+            }
+
+            Optional&lt;Long&gt; maybeUserId = request.getHeaders().get("X-User-Id", Long.class);
+
+            if (!maybeUserId.isPresent()) {
+                return Optional.empty();
+            }
+
+            User user = userRepository.get(maybeUserId.get());                          <i class="conum" data-value="4"></i><b>(4)</b>
+
+            request.setAttribute(KEY, user);                                            <i class="conum" data-value="5"></i><b>(5)</b>
+
+            return Optional.of(user);
+        });
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use <code>@Singleton</code> instead of <code>@RequestScope</code> if you want to use the advisors outside the controller calls (e.g. jobs)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Use <code>ServerRequestContext</code> to retrieve the current request if present</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Check if the request already does not contain the user object</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Retrieving <code>User</code> can be potentially expensive operation</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Store the <code>User</code> in the request for the calls which may follow</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_granting_permissions"><a class="anchor" href="#_granting_permissions"></a>2.5. Granting Permissions</h3>
+<div class="paragraph">
+<p>Sometimes you want to disable the check for a particular method calls. One of the examples could be and administrator access
+or calling the code from serverless function.</p>
+</div>
+<div class="paragraph">
+<p>In the following example you can see two options how to temporarily disable the permission checks.</p>
+</div>
+<div class="listingblock">
+<div class="title">AdministratorPostService.java</div>
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">import jakarta.inject.Singleton;
+
+@Singleton
+public class AdministratorPostService {
+
+    private final PostService postService;
+    private final PostRepository postRepository;
+    private final TemporaryPermissions temporaryPermissions;
+
+    public AdministratorPostService(
+        PostService postService,
+        PostRepository postRepository,
+        TemporaryPermissions temporaryPermissions
+    ) {
+        this.postService = postService;
+        this.postRepository = postRepository;
+        this.temporaryPermissions = temporaryPermissions;
+    }
+
+    @GrantsPermission("edit")                                                           <i class="conum" data-value="1"></i><b>(1)</b>
+    public Post archive(Post post) {
+        return postRepository.save(postService.archive(post));
+    }
+
+    public Post publish(Post post) {
+        Post publishedPost = temporaryPermissions.grantPermissions("edit", post, () -&gt; {<i class="conum" data-value="2"></i><b>(2)</b>
+            return postService.archive(post);
+        });
+        return postRepository.save(publishedPost);
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Using <code>@GrantPermissions</code> annotation to disable checks for the <code>post</code> object within the method body</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Disabling the checks just for the limited scope with <code>TemporaryPermissions</code> object</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_links"><a class="anchor" href="#_links"></a>3. Links</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="api/index.html" target="_blank" rel="noopener">Javadoc</a></p>
+</div>
+<div class="paragraph">
+<p><a href="api-html/index.html" target="_blank" rel="noopener">Source</a></p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 1.0.0-micronaut-3.0<br>
+Last updated 2022-02-25 11:48:42 UTC
+</div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.min.js"></script>
+</body>
+</html>
