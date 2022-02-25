@@ -15,20 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    id 'groovy-gradle-plugin'
-    id 'groovy'
-}
+package com.agorapulse.permissions;
 
-repositories {
-    mavenCentral()
-    maven { url 'https://plugins.gradle.org/m2/' }
-}
+import io.micronaut.http.context.ServerRequestContext;
 
-dependencies {
-    compile gradleApi()
-    compile localGroovy()
+import javax.inject.Singleton;
+import java.util.Optional;
 
-    compile 'io.spring.gradle:dependency-management-plugin:1.0.5.RELEASE'
-    compile 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+@Singleton
+public class RequestScopeUserProvider implements UserProvider {
+
+    @Override
+    public Optional<User> getCurrentUser() {
+        return ServerRequestContext.currentRequest().flatMap(request -> {
+            Optional<Long> userId = request.getHeaders().get("X-User-Id", Long.class);
+            return userId.map(User::new);
+        });
+    }
+
 }

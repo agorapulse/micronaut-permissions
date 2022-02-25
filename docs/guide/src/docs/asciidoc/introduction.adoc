@@ -2,4 +2,48 @@
 [[_introduction]]
 = Introduction
 
+Micronaut Permissions provides a lightweight library to declare object level permissions in Micronaut
+which can be declared on any service and which are not limited to HTTP environment. The typical example is guaranteeing that only the creator of an object can edit its properties.
 
+Let's imagine a social network which publishes posts:
+
+.Post.java
+[source,java]
+----
+include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/Post.java[lines=20..-1]
+----
+
+Only the author of the `Post` can update its state to either `publish` it or `archive` it. This can be achieved by
+annotating the particular service methods with `@RequiresPermissions` annotation.
+
+.PostService.java
+[source,java]
+----
+include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/PostService.java[lines=20..-1]
+----
+
+The required permission is any arbitrary `String`. The permissions are checked using the beans implementing `PermissionAdvisor<T>`
+interface. The following advisor will check if the current `User` is author of the `Post`.
+
+.PostService.java
+[source,java]
+----
+include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/EditPostAdvisor.java[lines=20..-1]
+----
+
+TIP: `PermissionAdvisor` implements `Ordered` interface so you can prioritize one advisor before another.
+
+There are three different outcomes of the check
+
+* `UNKNOWN` if the status cannot be determined
+* `ALLOW` if the user *can* perform the requested operation
+* `DENY` if the user *cannot* perform the requested operation
+
+If the operation cannot be performed then the `PermissionException` is thrown. You can map this exception to `401 UNAUTHORIZED`
+using the `@Error` annotation within your HTTP environment.
+
+.PostController.java
+[source,java]
+----
+include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/PostController.java[tags=error,indent=0]
+----

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * Copyright 2019-2022 Agorapulse.
+ * Copyright 2022 Agorapulse.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ config {
     release = (rootProject.findProperty('release') ?: false).toBoolean()
 
     info {
-        name        = 'Micronaut Rethrow'
+        name        = 'Micronaut Permissions'
         vendor      = 'Agorapulse'
-        description = 'Micronaut Rethrow Library'
+        description = 'Micronaut Permissions Library'
 
         links {
             website      = "https://github.com/" + slug

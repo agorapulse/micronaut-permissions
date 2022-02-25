@@ -20,23 +20,32 @@ package com.agorapulse.permissions;
 import javax.inject.Singleton;
 
 @Singleton
-public class PostService {
+public class AdministratorPostService {
 
-    public Post create(Long userId, String message) {
-        if (userId == null || userId == 0) {
-            throw new IllegalArgumentException("User not specified");
-        }
-        return Post.createDraft(userId, message);
+    private final PostService postService;
+    private final PostRepository postRepository;
+    private final TemporaryPermissions temporaryPermissions;
+
+    public AdministratorPostService(
+        PostService postService,
+        PostRepository postRepository,
+        TemporaryPermissions temporaryPermissions
+    ) {
+        this.postService = postService;
+        this.postRepository = postRepository;
+        this.temporaryPermissions = temporaryPermissions;
     }
 
-    @RequiresPermission("edit")
+    @GrantsPermission("edit")
     public Post archive(Post post) {
-        return post.archive();
+        return postRepository.save(postService.archive(post));
     }
 
-    @RequiresPermission("edit")
     public Post publish(Post post) {
-        return post.publish();
+        Post publishedPost = temporaryPermissions.grantPermissions("edit", post, () -> {
+            return postService.archive(post);
+        });
+        return postRepository.save(publishedPost);
     }
 
 }
