@@ -17,10 +17,24 @@
  */
 package com.agorapulse.permissions;
 
+/**
+ * The result of the permission check.
+ */
 public enum PermissionCheckResult {
 
+    /**
+     * The operation is allowed
+     */
     ALLOW,
+
+    /**
+     * The result of the check is unknown
+     */
     UNKNOWN,
+
+    /**
+     * The opration is denied
+     */
     DENY
 
 }

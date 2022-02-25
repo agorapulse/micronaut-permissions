@@ -19,6 +19,11 @@ package com.agorapulse.permissions;
 
 import io.micronaut.core.type.Argument;
 
+/**
+ * {@link PermissionChecker} is the service backing the {@link RequiresPermission} annotation and can be used
+ * for low-level access. The default implementation uses existin beans of type {@link PermissionAdvisor}
+ * to evaluate the permissions' conditions.
+ */
 public interface PermissionChecker {
 
     <T> PermissionCheckResult checkPermission(String permissionDefinition, T value, Argument<T> valueType);

@@ -27,6 +27,11 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * You can use {@link GrantsPermission} annotation to declare the required permission checks for every method's argument
+ * which has the {@link PermissionAdvisor} declared. At least one argument must have the {@link PermissionAdvisor} declared
+ * and every check must pass.
+ */
 @Around
 @Documented
 @Retention(RUNTIME)
@@ -34,6 +39,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Type(RequiresPermissionInterceptor.class)
 public @interface RequiresPermission {
 
+    /**
+     * @return the arbitrary permissions' definition, there is no semantics given by default as they are declared by the advisors
+     */
     String value();
 
 }

@@ -33,7 +33,7 @@ public class EditPostAdvisor implements PermissionAdvisor<Post> {
 
     @Override
     public Argument<Post> argumentType() {
-        return Argument.of(Post.class);
+        return Argument.of(Post.class);                                                 // <1>
     }
 
     @Override
@@ -43,14 +43,14 @@ public class EditPostAdvisor implements PermissionAdvisor<Post> {
         Argument<Post> argument
     ) {
         if (provider == null || value == null || !"edit".equals(permissionDefinition)) {
-            return PermissionCheckResult.UNKNOWN;
+            return PermissionCheckResult.UNKNOWN;                                       // <2>
         }
 
         return provider.getCurrentUser().map(u -> {
             if (Objects.equals(u.getId(), value.getAuthorId())) {
-                return PermissionCheckResult.ALLOW;
+                return PermissionCheckResult.ALLOW;                                     // <3>
             }
-            return PermissionCheckResult.DENY;
+            return PermissionCheckResult.DENY;                                          // <4>
         }).orElse(PermissionCheckResult.DENY);
     }
 }

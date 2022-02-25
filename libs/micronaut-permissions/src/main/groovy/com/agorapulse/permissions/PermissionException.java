@@ -19,6 +19,9 @@ package com.agorapulse.permissions;
 
 import javax.annotation.Nullable;
 
+/**
+ * The exception is throw when there are missing permissions for a particular value.
+ */
 public class PermissionException extends RuntimeException {
 
     private final String permission;

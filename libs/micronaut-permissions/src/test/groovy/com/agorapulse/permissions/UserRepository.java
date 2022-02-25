@@ -17,20 +17,13 @@
  */
 package com.agorapulse.permissions;
 
-import io.micronaut.http.context.ServerRequestContext;
-
 import javax.inject.Singleton;
-import java.util.Optional;
 
 @Singleton
-public class RequestScopeUserProvider implements UserProvider {
+public class UserRepository {
 
-    @Override
-    public Optional<User> getCurrentUser() {
-        return ServerRequestContext.currentRequest().flatMap(request -> {
-            Optional<Long> userId = request.getHeaders().get("X-User-Id", Long.class);
-            return userId.map(User::new);
-        });
+    public User get(Long id) {
+        return new User(id);
     }
 
 }

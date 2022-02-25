@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Singleton
 class GrantsPermissionInterceptor implements MethodInterceptor<Object, Object> {
 
-    public static final int POSITION = -250;
+    public static final int POSITION = -350;
 
     private final TemporaryPermissions temporaryPermissions;
 

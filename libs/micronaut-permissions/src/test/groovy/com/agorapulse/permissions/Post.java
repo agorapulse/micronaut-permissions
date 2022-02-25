@@ -37,14 +37,6 @@ public class Post {
         this.status = status;
     }
 
-    Post publish() {
-        return new Post(id, authorId, message, Status.PUBLISHED);
-    }
-
-    Post archive() {
-        return new Post(id, authorId, message, Status.ARCHIVED);
-    }
-
     public Status getStatus() {
         return status;
     }
@@ -57,11 +49,20 @@ public class Post {
         return message;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     void setId(Long id) {
         this.id = id;
     }
 
-    public Long getId() {
-        return id;
+    Post publish() {
+        return new Post(id, authorId, message, Status.PUBLISHED);
     }
+
+    Post archive() {
+        return new Post(id, authorId, message, Status.ARCHIVED);
+    }
+
 }

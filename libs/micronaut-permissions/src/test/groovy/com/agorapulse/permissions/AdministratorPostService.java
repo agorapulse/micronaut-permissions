@@ -36,13 +36,13 @@ public class AdministratorPostService {
         this.temporaryPermissions = temporaryPermissions;
     }
 
-    @GrantsPermission("edit")
+    @GrantsPermission("edit")                                                           // <1>
     public Post archive(Post post) {
         return postRepository.save(postService.archive(post));
     }
 
     public Post publish(Post post) {
-        Post publishedPost = temporaryPermissions.grantPermissions("edit", post, () -> {
+        Post publishedPost = temporaryPermissions.grantPermissions("edit", post, () -> {// <2>
             return postService.archive(post);
         });
         return postRepository.save(publishedPost);

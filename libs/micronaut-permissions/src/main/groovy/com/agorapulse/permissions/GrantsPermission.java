@@ -27,6 +27,10 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * You can use {@link GrantsPermission} annotation to bypass checks otherwise implied by {@link RequiresPermission}
+ * within a method body.
+ */
 @Around
 @Documented
 @Retention(RUNTIME)
@@ -34,7 +38,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Type(GrantsPermissionInterceptor.class)
 public @interface GrantsPermission {
 
+    /**
+     * @return the list of the permission granted within the method body to the method's arguments
+     */
     String[] value();
+
+    /**
+     * @return the list of the names of the arguments to bypass the permissions checks
+     */
     String[] target() default "";
 
 }

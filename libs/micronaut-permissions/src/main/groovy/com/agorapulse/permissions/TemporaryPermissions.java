@@ -20,6 +20,9 @@ package com.agorapulse.permissions;
 import java.util.Collections;
 import java.util.function.Supplier;
 
+/**
+ * This is a lowel access to the functionality provided by {@link GrantsPermission} annotation.
+ */
 public interface TemporaryPermissions {
 
     default <T> T grantPermissions(String permissionDefinition, Object value, Supplier<T> withPermissions) {

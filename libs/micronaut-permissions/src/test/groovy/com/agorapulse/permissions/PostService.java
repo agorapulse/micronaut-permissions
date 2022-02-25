@@ -29,7 +29,7 @@ public class PostService {
         return Post.createDraft(userId, message);
     }
 
-    @RequiresPermission("edit")
+    @RequiresPermission("edit")                                                         // <1>
     public Post archive(Post post) {
         return post.archive();
     }
