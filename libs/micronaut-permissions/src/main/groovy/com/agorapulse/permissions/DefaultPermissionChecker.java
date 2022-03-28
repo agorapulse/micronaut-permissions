@@ -24,7 +24,7 @@ import javax.inject.Singleton;
 import java.util.List;
 
 @Singleton
-class DefaultPermissionChecker implements PermissionChecker {
+public class DefaultPermissionChecker implements PermissionChecker {
 
     private final List<PermissionAdvisor<?>> advisors;
 

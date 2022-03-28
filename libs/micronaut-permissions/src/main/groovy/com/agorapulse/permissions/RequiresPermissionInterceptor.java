@@ -27,7 +27,7 @@ import javax.inject.Singleton;
 import java.util.Map;
 
 @Singleton
-class RequiresPermissionInterceptor implements MethodInterceptor<Object, Object> {
+public class RequiresPermissionInterceptor implements MethodInterceptor<Object, Object> {
 
     public static final int POSITION = -300;
 
