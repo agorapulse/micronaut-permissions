@@ -22,7 +22,7 @@ import io.micronaut.core.type.Argument;
 import javax.inject.Singleton;
 
 @Singleton
-class GrantsPermissionAdvisor implements PermissionAdvisor<Object> {
+public class GrantsPermissionAdvisor implements PermissionAdvisor<Object> {
 
     private final TemporaryPermissionsHolder temporaryPermissionsHolder;
 

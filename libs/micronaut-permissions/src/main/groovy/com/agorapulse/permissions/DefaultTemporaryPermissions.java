@@ -21,7 +21,7 @@ import javax.inject.Singleton;
 import java.util.function.Supplier;
 
 @Singleton
-class DefaultTemporaryPermissions implements TemporaryPermissions {
+public class DefaultTemporaryPermissions implements TemporaryPermissions {
 
     private final TemporaryPermissionsHolder temporaryPermissionsHolder;
 

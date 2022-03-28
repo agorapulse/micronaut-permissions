@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Singleton
-class GrantsPermissionInterceptor implements MethodInterceptor<Object, Object> {
+public class GrantsPermissionInterceptor implements MethodInterceptor<Object, Object> {
 
     public static final int POSITION = -350;
 
