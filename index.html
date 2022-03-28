@@ -92,22 +92,23 @@ $(addBlockSwitches);
 <h1>Micronaut Permissions Library</h1>
 <div class="details">
 <span id="author" class="author">Vladimir Orany</span><br>
-<span id="revnumber">version 1.0.0-micronaut-3.0</span>
+<span id="revnumber">version 1.0.1-micronaut-3.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_installation_">1. Installation</a></li>
-<li><a href="#_usage">2. Usage</a>
+<li><a href="#_introduction">2. Introduction</a></li>
+<li><a href="#_usage">3. Usage</a>
 <ul class="sectlevel2">
-<li><a href="#_require_permissions">2.1. Require Permissions</a></li>
-<li><a href="#_permission_advisors">2.2. Permission Advisors</a></li>
-<li><a href="#_exception_handling">2.3. Exception Handling</a></li>
-<li><a href="#_user_retrieval">2.4. User Retrieval</a></li>
-<li><a href="#_granting_permissions">2.5. Granting Permissions</a></li>
+<li><a href="#_require_permissions">3.1. Require Permissions</a></li>
+<li><a href="#_permission_advisors">3.2. Permission Advisors</a></li>
+<li><a href="#_exception_handling">3.3. Exception Handling</a></li>
+<li><a href="#_user_retrieval">3.4. User Retrieval</a></li>
+<li><a href="#_granting_permissions">3.5. Granting Permissions</a></li>
 </ul>
 </li>
-<li><a href="#_links">3. Links</a></li>
+<li><a href="#_links">4. Links</a></li>
 </ul>
 </div>
 </div>
@@ -129,7 +130,16 @@ dependencies {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_usage"><a class="anchor" href="#_usage"></a>2. Usage</h2>
+<h2 id="_introduction"><a class="anchor" href="#_introduction"></a>2. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Micronaut Permissions provides a lightweight library to declare object level permissions in Micronaut
+which can be declared on any service and which are not limited to HTTP environment.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_usage"><a class="anchor" href="#_usage"></a>3. Usage</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The typical example is guaranteeing that only the creator of an object can edit its properties. Let&#8217;s imagine a social network which publishes posts:</p>
@@ -193,7 +203,7 @@ dependencies {
 annotating the particular service methods with <code>@RequiresPermissions</code> annotation.</p>
 </div>
 <div class="sect2">
-<h3 id="_require_permissions"><a class="anchor" href="#_require_permissions"></a>2.1. Require Permissions</h3>
+<h3 id="_require_permissions"><a class="anchor" href="#_require_permissions"></a>3.1. Require Permissions</h3>
 <div class="listingblock">
 <div class="title">PostService.java</div>
 <div class="content">
@@ -239,7 +249,7 @@ There must be <a href="#_permission_advisors">permission advisor</a> defined for
 </div>
 </div>
 <div class="sect2">
-<h3 id="_permission_advisors"><a class="anchor" href="#_permission_advisors"></a>2.2. Permission Advisors</h3>
+<h3 id="_permission_advisors"><a class="anchor" href="#_permission_advisors"></a>3.2. Permission Advisors</h3>
 <div class="paragraph">
 <p>The permissions are checked using the beans implementing <code>PermissionAdvisor&lt;T&gt;</code> interface.</p>
 </div>
@@ -366,7 +376,7 @@ public class EditPostAdvisor implements PermissionAdvisor&lt;Post&gt; {
 </div>
 </div>
 <div class="sect2">
-<h3 id="_exception_handling"><a class="anchor" href="#_exception_handling"></a>2.3. Exception Handling</h3>
+<h3 id="_exception_handling"><a class="anchor" href="#_exception_handling"></a>3.3. Exception Handling</h3>
 <div class="paragraph">
 <p>You can map <code>PermissionException</code> to <code>401 UNAUTHORIZED</code> using the <code>@Error</code> annotation within your HTTP environment.</p>
 </div>
@@ -381,7 +391,7 @@ public HttpResponse&lt;JsonError&gt; permissionException(PermissionException ex)
 </div>
 </div>
 <div class="sect2">
-<h3 id="_user_retrieval"><a class="anchor" href="#_user_retrieval"></a>2.4. User Retrieval</h3>
+<h3 id="_user_retrieval"><a class="anchor" href="#_user_retrieval"></a>3.4. User Retrieval</h3>
 <div class="paragraph">
 <p>There is no predefined interface for retrieving the user but the best practise to create a very simple interface that
 returns an <code>Optional</code>:</p>
@@ -472,7 +482,7 @@ public class RequestUserProvider implements UserProvider {
 </div>
 </div>
 <div class="sect2">
-<h3 id="_granting_permissions"><a class="anchor" href="#_granting_permissions"></a>2.5. Granting Permissions</h3>
+<h3 id="_granting_permissions"><a class="anchor" href="#_granting_permissions"></a>3.5. Granting Permissions</h3>
 <div class="paragraph">
 <p>Sometimes you want to disable the check for a particular method calls. One of the examples could be and administrator access
 or calling the code from serverless function.</p>
@@ -533,7 +543,7 @@ public class AdministratorPostService {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_links"><a class="anchor" href="#_links"></a>3. Links</h2>
+<h2 id="_links"><a class="anchor" href="#_links"></a>4. Links</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><a href="api/index.html" target="_blank" rel="noopener">Javadoc</a></p>
@@ -546,8 +556,8 @@ public class AdministratorPostService {
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.0-micronaut-3.0<br>
-Last updated 2022-02-25 11:48:42 UTC
+Version 1.0.1-micronaut-3.0<br>
+Last updated 2022-03-28 14:27:41 UTC
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
