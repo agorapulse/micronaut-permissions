@@ -9,6 +9,6 @@ repositories {
 }
 
 dependencies {
-    implemenation 'com.agorapulse:micronaut-permissions:{project-version}'
+    implementation 'com.agorapulse:micronaut-permissions:{project-version}'
 }
 ----
