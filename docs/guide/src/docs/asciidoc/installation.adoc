@@ -2,7 +2,7 @@
 [[_installation_]]
 = Installation
 
-[source]
+[source,subs='verbatim,attributes']
 ----
 repositories {
     mavenCentral()

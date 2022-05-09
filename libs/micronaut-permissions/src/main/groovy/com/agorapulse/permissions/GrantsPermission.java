@@ -20,10 +20,7 @@ package com.agorapulse.permissions;
 import io.micronaut.aop.Around;
 import io.micronaut.context.annotation.Type;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -32,6 +29,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * within a method body.
  */
 @Around
+@Inherited
 @Documented
 @Retention(RUNTIME)
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
