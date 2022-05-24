@@ -2,7 +2,7 @@
 [[_usage]]
 = Usage
 
-The typical example is guaranteeing that only the creator of an object can edit its properties. Let's imagine a social network which publishes posts:
+The typical example guarantees that only the creator of an object can edit its properties. Imagine a social network which publishes posts:
 
 .Post.java
 [source,java]
@@ -11,7 +11,7 @@ include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/pe
 ----
 
 Only the author of the `Post` can update its state to either `publish` it or `archive` it. This can be achieved by
-annotating the particular service methods with `@RequiresPermissions` annotation.
+annotating the associated service methods with the `@RequiresPermissions` annotation.
 
 [[_require_permissions]]
 == Require Permissions
@@ -23,24 +23,24 @@ include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/pe
 ----
 <1> Require permission `edit` on the `Post` object `post`
 
-The required permission is any arbitrary `String`. The semantics are given by specific implementation of the <<_permission_advisors, permission advisor>>.
+The permission can be any `String`. The semantics are given by the implementation of the <<_permission_advisors, permission advisor>>.
 
-In case of method having multiple arguments then every argument must pass the verification if particular  <<_permission_advisors, permission advisor>> is defined.
-There must be <<_permission_advisors, permission advisor>> defined for at least one fo the arguments.
+For methods with multiple arguments, every argument must pass verification by the defined  <<_permission_advisors, permission advisor>>.
+There must be a <<_permission_advisors, permission advisor>> defined for at least one of the arguments.
 
 [[_permission_advisors]]
 == Permission Advisors
 
-The permissions are checked using the beans implementing `PermissionAdvisor<T>` interface.
+Permissions are checked by beans that implement `PermissionAdvisor<T>`.
 
 .PermissionAdvisor.java
 [source,java]
 ----
 include::{root-dir}/libs/micronaut-permissions/src/main/groovy/com/agorapulse/permissions/PermissionAdvisor.java[lines=20..-1]
 ----
-TIP: `PermissionAdvisor` implements `Ordered` interface, so you can prioritize one advisor over another.
+TIP: `PermissionAdvisor` extends `Ordered` to support prioritizing one advisor over another.
 
-The following advisor will check if the current `User` is author of the `Post` instance.
+The following advisor will check if the current `User` is the author of the `Post` instance.
 
 .EditPostAdvisor.java
 [source,java]
@@ -48,17 +48,16 @@ The following advisor will check if the current `User` is author of the `Post` i
 include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/EditPostAdvisor.java[lines=20..-1]
 ----
 <1> Declare the type of the argument being verified
-<2> Return `UNKNOWN` if the status cannot be determined, next advisor will be asked for the result
+<2> Return `UNKNOWN` if the status cannot be determined; the next advisor will be asked for the result
 <3> Return `ALLOW` if the user *can* perform the requested operation
 <4> Return `DENY` if the user *cannot* perform the requested operation
 
-
-If any advisor return `DENY` or every advisor returns `UNKNOWN` then the `PermissionException` is thrown.
+If any advisor returns `DENY`, or every advisor returns `UNKNOWN`, a `PermissionException` is thrown.
 
 [[_exception_handling]]
 == Exception Handling
 
-You can map `PermissionException` to `401 UNAUTHORIZED` using the `@Error` annotation within your HTTP environment.
+You can map `PermissionException` to `401 UNAUTHORIZED` using the `@Error` annotation in your HTTP environment.
 
 .Handling `PermissionException` in Controller
 [source,java]
@@ -69,7 +68,7 @@ include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/pe
 [[_user_retrieval]]
 == User Retrieval
 
-There is no predefined interface for retrieving the user but the best practise to create a very simple interface that
+There is no predefined interface for retrieving the user, but the best practise is to create a simple interface that
 returns an `Optional`:
 
 .UserProvider.java
@@ -78,31 +77,31 @@ returns an `Optional`:
 include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/UserProvider.java[lines=20..-1]
 ----
 
-Then the example implementation can look like the following one:
+Then the example implementation can look like this:
 
 .RequestScopeUserProvider.java
 [source,java]
 ----
 include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/RequestUserProvider.java[lines=20..-1]
 ----
-<1> Use `@Singleton` instead of `@RequestScope` if you want to use the advisors outside the controller calls (e.g. jobs)
-<2> Use `ServerRequestContext` to retrieve the current request if present
-<3> Check if the request already does not contain the user object
-<4> Retrieving `User` can be potentially expensive operation
+<1> Use `@Singleton` instead of `@RequestScope` to use an advisor outside of controller calls (e.g. jobs)
+<2> Use `ServerRequestContext` to retrieve the current request, if present
+<3> Check if the request already contains the user object
+<4> Retrieving `User` is a potentially expensive operation
 <5> Store the `User` in the request for the calls which may follow
 
 [[_granting_permissions]]
 == Granting Permissions
 
-Sometimes you want to disable the check for a particular method calls. One of the examples could be and administrator access
-or calling the code from serverless function.
+You can disable a check for a particular method call, for example for administrator access,
+or for calling the code from a serverless function.
 
-In the following example you can see two options how to temporarily disable the permission checks.
+The following example shows two options for temporarily disabling permission checks.
 
 .AdministratorPostService.java
 [source,java]
 ----
 include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/AdministratorPostService.java[lines=20..-1]
 ----
-<1> Using `@GrantPermissions` annotation to disable checks for the `post` object within the method body
-<2> Disabling the checks just for the limited scope with `TemporaryPermissions` object
+<1> Annotate with `@GrantPermissions` to disable checks within the method body for the `post` object
+<2> Disable checks just for the limited scope with `TemporaryPermissions` object
