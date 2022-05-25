@@ -142,7 +142,7 @@ which can be declared on any service and which are not limited to HTTP environme
 <h2 id="_usage"><a class="anchor" href="#_usage"></a>3. Usage</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The typical example is guaranteeing that only the creator of an object can edit its properties. Let&#8217;s imagine a social network which publishes posts:</p>
+<p>The typical example guarantees that only the creator of an object can edit its properties. Imagine a social network which publishes posts:</p>
 </div>
 <div class="listingblock">
 <div class="title">Post.java</div>
@@ -200,7 +200,7 @@ which can be declared on any service and which are not limited to HTTP environme
 </div>
 <div class="paragraph">
 <p>Only the author of the <code>Post</code> can update its state to either <code>publish</code> it or <code>archive</code> it. This can be achieved by
-annotating the particular service methods with <code>@RequiresPermissions</code> annotation.</p>
+annotating the associated service methods with the <code>@RequiresPermissions</code> annotation.</p>
 </div>
 <div class="sect2">
 <h3 id="_require_permissions"><a class="anchor" href="#_require_permissions"></a>3.1. Require Permissions</h3>
@@ -241,17 +241,17 @@ public class PostService {
 </table>
 </div>
 <div class="paragraph">
-<p>The required permission is any arbitrary <code>String</code>. The semantics are given by specific implementation of the <a href="#_permission_advisors">permission advisor</a>.</p>
+<p>The permission can be any <code>String</code>. The semantics are given by the implementation of the <a href="#_permission_advisors">permission advisor</a>.</p>
 </div>
 <div class="paragraph">
-<p>In case of method having multiple arguments then every argument must pass the verification if particular  <a href="#_permission_advisors">permission advisor</a> is defined.
-There must be <a href="#_permission_advisors">permission advisor</a> defined for at least one fo the arguments.</p>
+<p>For methods with multiple arguments, every argument must pass verification by the defined  <a href="#_permission_advisors">permission advisor</a>.
+There must be a <a href="#_permission_advisors">permission advisor</a> defined for at least one of the arguments.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_permission_advisors"><a class="anchor" href="#_permission_advisors"></a>3.2. Permission Advisors</h3>
 <div class="paragraph">
-<p>The permissions are checked using the beans implementing <code>PermissionAdvisor&lt;T&gt;</code> interface.</p>
+<p>Permissions are checked by beans that implement <code>PermissionAdvisor&lt;T&gt;</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">PermissionAdvisor.java</div>
@@ -301,13 +301,13 @@ public interface PermissionAdvisor&lt;T&gt; extends Ordered {
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-<code>PermissionAdvisor</code> implements <code>Ordered</code> interface, so you can prioritize one advisor over another.
+<code>PermissionAdvisor</code> extends <code>Ordered</code> to support prioritizing one advisor over another.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>The following advisor will check if the current <code>User</code> is author of the <code>Post</code> instance.</p>
+<p>The following advisor will check if the current <code>User</code> is the author of the <code>Post</code> instance.</p>
 </div>
 <div class="listingblock">
 <div class="title">EditPostAdvisor.java</div>
@@ -359,7 +359,7 @@ public class EditPostAdvisor implements PermissionAdvisor&lt;Post&gt; {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Return <code>UNKNOWN</code> if the status cannot be determined, next advisor will be asked for the result</td>
+<td>Return <code>UNKNOWN</code> if the status cannot be determined; the next advisor will be asked for the result</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -372,13 +372,13 @@ public class EditPostAdvisor implements PermissionAdvisor&lt;Post&gt; {
 </table>
 </div>
 <div class="paragraph">
-<p>If any advisor return <code>DENY</code> or every advisor returns <code>UNKNOWN</code> then the <code>PermissionException</code> is thrown.</p>
+<p>If any advisor returns <code>DENY</code>, or every advisor returns <code>UNKNOWN</code>, a <code>PermissionException</code> is thrown.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_exception_handling"><a class="anchor" href="#_exception_handling"></a>3.3. Exception Handling</h3>
 <div class="paragraph">
-<p>You can map <code>PermissionException</code> to <code>401 UNAUTHORIZED</code> using the <code>@Error</code> annotation within your HTTP environment.</p>
+<p>You can map <code>PermissionException</code> to <code>401 UNAUTHORIZED</code> using the <code>@Error</code> annotation in your HTTP environment.</p>
 </div>
 <div class="listingblock">
 <div class="title">Handling <code>PermissionException</code> in Controller</div>
@@ -393,7 +393,7 @@ public HttpResponse&lt;JsonError&gt; permissionException(PermissionException ex)
 <div class="sect2">
 <h3 id="_user_retrieval"><a class="anchor" href="#_user_retrieval"></a>3.4. User Retrieval</h3>
 <div class="paragraph">
-<p>There is no predefined interface for retrieving the user but the best practise to create a very simple interface that
+<p>There is no predefined interface for retrieving the user, but the best practise is to create a simple interface that
 returns an <code>Optional</code>:</p>
 </div>
 <div class="listingblock">
@@ -409,7 +409,7 @@ public interface UserProvider {
 </div>
 </div>
 <div class="paragraph">
-<p>Then the example implementation can look like the following one:</p>
+<p>Then the example implementation can look like this:</p>
 </div>
 <div class="listingblock">
 <div class="title">RequestScopeUserProvider.java</div>
@@ -460,19 +460,19 @@ public class RequestUserProvider implements UserProvider {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Use <code>@Singleton</code> instead of <code>@RequestScope</code> if you want to use the advisors outside the controller calls (e.g. jobs)</td>
+<td>Use <code>@Singleton</code> instead of <code>@RequestScope</code> to use an advisor outside of controller calls (e.g. jobs)</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Use <code>ServerRequestContext</code> to retrieve the current request if present</td>
+<td>Use <code>ServerRequestContext</code> to retrieve the current request, if present</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Check if the request already does not contain the user object</td>
+<td>Check if the request already contains the user object</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Retrieving <code>User</code> can be potentially expensive operation</td>
+<td>Retrieving <code>User</code> is a potentially expensive operation</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
@@ -484,11 +484,11 @@ public class RequestUserProvider implements UserProvider {
 <div class="sect2">
 <h3 id="_granting_permissions"><a class="anchor" href="#_granting_permissions"></a>3.5. Granting Permissions</h3>
 <div class="paragraph">
-<p>Sometimes you want to disable the check for a particular method calls. One of the examples could be and administrator access
-or calling the code from serverless function.</p>
+<p>You can disable a check for a particular method call, for example for administrator access,
+or for calling the code from a serverless function.</p>
 </div>
 <div class="paragraph">
-<p>In the following example you can see two options how to temporarily disable the permission checks.</p>
+<p>The following example shows two options for temporarily disabling permission checks.</p>
 </div>
 <div class="listingblock">
 <div class="title">AdministratorPostService.java</div>
@@ -531,11 +531,11 @@ public class AdministratorPostService {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Using <code>@GrantPermissions</code> annotation to disable checks for the <code>post</code> object within the method body</td>
+<td>Annotate with <code>@GrantPermissions</code> to disable checks within the method body for the <code>post</code> object</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Disabling the checks just for the limited scope with <code>TemporaryPermissions</code> object</td>
+<td>Disable checks just for the limited scope with <code>TemporaryPermissions</code> object</td>
 </tr>
 </table>
 </div>
@@ -557,7 +557,7 @@ public class AdministratorPostService {
 <div id="footer">
 <div id="footer-text">
 Version 1.0.2-micronaut-3.0<br>
-Last updated 2022-05-24 06:58:22 UTC
+Last updated 2022-05-25 08:43:03 UTC
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
