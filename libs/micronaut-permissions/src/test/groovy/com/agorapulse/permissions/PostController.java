@@ -52,6 +52,15 @@ public class PostController {
         return postRepository.save(postService.publish(postRepository.get(id)));
     }
 
+    @Status(HttpStatus.CREATED)
+    @io.micronaut.http.annotation.Post("/merge")
+    public Post compare(@Nullable @Header("X-User-Id") Long userId, @Body PostMergeRequest postMergeRequest) {
+        Post mergedPost = postService.merge(userId,
+            postRepository.get(postMergeRequest.getId1()),
+            postRepository.get(postMergeRequest.getId2()));
+        return postRepository.save(mergedPost);
+    }
+
     // tag::error[]
     @Error(PermissionException.class)
     public HttpResponse<JsonError> permissionException(PermissionException ex) {

@@ -20,12 +20,15 @@ package com.agorapulse.permissions;
 import io.micronaut.core.type.Argument;
 
 import javax.inject.Singleton;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Singleton
 public class EditPostAdvisor implements PermissionAdvisor<Post> {
 
     private final UserProvider provider;
+    private final static List<String> PERMISSIONS = Arrays.asList("edit", "read");
 
     public EditPostAdvisor(UserProvider provider) {
         this.provider = provider;
@@ -42,7 +45,7 @@ public class EditPostAdvisor implements PermissionAdvisor<Post> {
         Post value,
         Argument<Post> argument
     ) {
-        if (provider == null || value == null || !"edit".equals(permissionDefinition)) {
+        if (provider == null || value == null || !PERMISSIONS.contains(permissionDefinition)) {
             return PermissionCheckResult.UNKNOWN;                                       // <2>
         }
 

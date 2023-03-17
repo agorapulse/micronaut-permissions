@@ -62,6 +62,34 @@ class PostControllerSpec extends Specification {
             }
     }
 
+    void 'create post with same auth'() {
+        expect:
+            gru.test {
+                post '/post', {
+                    headers 'X-User-Id': '1'
+                    json message: 'Hello'
+                }
+                expect {
+                    status CREATED
+                    json 'newPost2.json'
+                }
+            }
+    }
+
+    void 'create post with another auth'() {
+        expect:
+            gru.test {
+                post '/post', {
+                    headers 'X-User-Id': '2'
+                    json message: 'Hello'
+                }
+                expect {
+                    status CREATED
+                    json 'newPostOtherAuth.json'
+                }
+            }
+    }
+
     void 'publish post without any auth'() {
         expect:
             gru.test {
@@ -85,6 +113,19 @@ class PostControllerSpec extends Specification {
             }
     }
 
+    void 'publish post with wrong auth'() {
+        expect:
+            gru.test {
+                put '/post/1', {
+                    headers 'X-User-Id': '3'
+                }
+                expect {
+                    status UNAUTHORIZED
+                    json 'failedPublish.json'
+                }
+            }
+    }
+
     void 'archive post without any auth'() {
         expect:
             gru.test {
@@ -104,6 +145,34 @@ class PostControllerSpec extends Specification {
                 }
                 expect {
                     json 'archivedPost.json'
+                }
+            }
+    }
+
+    void 'merge posts with one not allowed'() {
+        expect:
+            gru.test {
+                post '/post/merge', {
+                    headers 'X-User-Id': '1'
+                    json id1: '1', id2: '3'
+                }
+                expect {
+                    status UNAUTHORIZED
+                    json 'failedMerge.json'
+                }
+            }
+    }
+
+    void 'merge posts'() {
+        expect:
+            gru.test {
+                post '/post/merge', {
+                    headers 'X-User-Id': '1'
+                    json id1: '1', id2: '2'
+                }
+                expect {
+                    status CREATED
+                    json 'mergedPost.json'
                 }
             }
     }

@@ -44,6 +44,7 @@ public class RequiresPermissionInterceptor implements MethodInterceptor<Object, 
                 .orElseThrow(() -> new PermissionException(null, context.getTargetMethod(), "Method without @RequiresPermission annotation!"));
 
         String permissionString = annotation.getRequiredValue(String.class);
+        boolean atLeastOneAllowed = false;
         for (Map.Entry<String, MutableArgumentValue<?>> e : context.getParameters().entrySet()) {
             Object value = e.getValue().getValue();
             Argument<Object> argument = (Argument<Object>) e.getValue();
@@ -52,11 +53,15 @@ public class RequiresPermissionInterceptor implements MethodInterceptor<Object, 
                 case DENY:
                     throw new PermissionException(permissionString, value, "The user does not have a permissions to perform operation");
                 case ALLOW:
-                    return context.proceed();
+                    atLeastOneAllowed = true;
                 case UNKNOWN:
                 default:
                     // continue to the next argument
             }
+        }
+
+        if (atLeastOneAllowed) {
+            return context.proceed();
         }
 
         throw new PermissionException(permissionString, context.getTargetMethod(), "Cannot determine if the user has the permissions to perform operation");
