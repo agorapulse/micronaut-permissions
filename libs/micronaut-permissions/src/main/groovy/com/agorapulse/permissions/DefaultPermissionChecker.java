@@ -62,6 +62,9 @@ public class DefaultPermissionChecker implements PermissionChecker {
 
     @SuppressWarnings("unchecked")
     public <T> PermissionCheckResult checkPermissionOnContainer(String permissionDefinition, Iterable<T> value, Argument<Iterable<T>> valueType) {
+        if (value == null) {
+            return PermissionCheckResult.ALLOW;
+        }
         for (T item : value) {
             switch (checkPermission(permissionDefinition, item, valueType.getTypeParameters()[0])) {
                 case DENY:
