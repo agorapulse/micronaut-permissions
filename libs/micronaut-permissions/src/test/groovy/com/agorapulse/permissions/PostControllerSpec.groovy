@@ -177,4 +177,56 @@ class PostControllerSpec extends Specification {
             }
     }
 
+    void 'handle null collection'() {
+        expect:
+            gru.test {
+                post '/post/handle-collection', {
+                    headers 'X-User-Id': '1'
+                    json ids: null
+                }
+                expect {
+                    status OK
+                }
+            }
+    }
+
+    void 'handle empty collection'() {
+        expect:
+            gru.test {
+                post '/post/handle-collection', {
+                    headers 'X-User-Id': '1'
+                    json ids: []
+                }
+                expect {
+                    status OK
+                }
+            }
+    }
+
+    void 'handle collection containing one not allowed'() {
+        expect:
+            gru.test {
+                post '/post/handle-collection', {
+                    headers 'X-User-Id': '1'
+                    json ids: [1, 3]
+                }
+                expect {
+                    status UNAUTHORIZED
+                }
+            }
+    }
+
+    void 'handle collection containing only allowed'() {
+        expect:
+            gru.test {
+                post '/post/handle-collection', {
+                    headers 'X-User-Id': '1'
+                    json ids: [1, 2]
+                }
+                expect {
+                    status OK
+                }
+            }
+    }
+
 }

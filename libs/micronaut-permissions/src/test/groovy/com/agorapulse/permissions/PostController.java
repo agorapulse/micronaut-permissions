@@ -24,6 +24,9 @@ import io.micronaut.http.annotation.Error;
 import io.micronaut.http.hateoas.JsonError;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller("/post")
 public class PostController {
@@ -54,11 +57,20 @@ public class PostController {
 
     @Status(HttpStatus.CREATED)
     @io.micronaut.http.annotation.Post("/merge")
-    public Post compare(@Nullable @Header("X-User-Id") Long userId, @Body PostMergeRequest postMergeRequest) {
+    public Post merge(@Nullable @Header("X-User-Id") Long userId, @Body PostMergeRequest postMergeRequest) {
         Post mergedPost = postService.merge(userId,
             postRepository.get(postMergeRequest.getId1()),
             postRepository.get(postMergeRequest.getId2()));
         return postRepository.save(mergedPost);
+    }
+
+    @io.micronaut.http.annotation.Post("/handle-collection")
+    public void handleCollection(@Body HandleCollectionRequest handleCollectionRequest) {
+        List<Post> posts = handleCollectionRequest.getIds() != null ? handleCollectionRequest.getIds()
+            .stream()
+            .map(postRepository::get)
+            .collect(Collectors.toList()) : null;
+        postService.handleCollection(posts);
     }
 
     // tag::error[]

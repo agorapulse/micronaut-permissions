@@ -18,6 +18,7 @@
 package com.agorapulse.permissions;
 
 import javax.inject.Singleton;
+import java.util.Collection;
 
 @Singleton
 public class PostService {
@@ -32,6 +33,10 @@ public class PostService {
     @RequiresPermission("edit")                                                         // <1>
     public Post archive(Post post) {
         return post.archive();
+    }
+
+    @RequiresPermission("edit")
+    public void handleCollection(Collection<Post> posts) {
     }
 
     @RequiresPermission("edit")
