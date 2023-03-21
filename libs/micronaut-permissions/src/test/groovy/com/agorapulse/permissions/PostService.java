@@ -39,4 +39,9 @@ public class PostService {
         return post.publish();
     }
 
+    @RequiresPermission("read")
+    public Post merge(Long userId, Post post1, Post post2) {
+        return Post.createDraft(userId, post1.getMessage() + post2.getMessage());
+    }
+
 }
