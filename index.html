@@ -92,7 +92,7 @@ $(addBlockSwitches);
 <h1>Micronaut Permissions Library</h1>
 <div class="details">
 <span id="author" class="author">Vladimir Orany</span><br>
-<span id="revnumber">version 1.0.3-micronaut-3.0</span>
+<span id="revnumber">version 1.0.4-micronaut-3.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -123,7 +123,7 @@ $(addBlockSwitches);
 }
 
 dependencies {
-    implementation 'com.agorapulse:micronaut-permissions:1.0.3-micronaut-3.0'
+    implementation 'com.agorapulse:micronaut-permissions:1.0.4-micronaut-3.0'
 }</code></pre>
 </div>
 </div>
@@ -208,6 +208,7 @@ annotating the associated service methods with the <code>@RequiresPermissions</c
 <div class="title">PostService.java</div>
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="java">import jakarta.inject.Singleton;
+import java.util.Collection;
 
 @Singleton
 public class PostService {
@@ -222,6 +223,10 @@ public class PostService {
     @RequiresPermission("edit")                                                         <i class="conum" data-value="1"></i><b>(1)</b>
     public Post archive(Post post) {
         return post.archive();
+    }
+
+    @RequiresPermission("edit")
+    public void handleCollection(Collection&lt;Post&gt; posts) {
     }
 
     @RequiresPermission("edit")
@@ -564,8 +569,8 @@ public class AdministratorPostService {
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.3-micronaut-3.0<br>
-Last updated 2023-03-21 14:37:39 UTC
+Version 1.0.4-micronaut-3.0<br>
+Last updated 2023-03-21 19:49:10 UTC
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
