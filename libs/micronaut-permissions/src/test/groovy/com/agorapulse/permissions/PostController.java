@@ -24,7 +24,6 @@ import io.micronaut.http.annotation.Error;
 import io.micronaut.http.hateoas.JsonError;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
