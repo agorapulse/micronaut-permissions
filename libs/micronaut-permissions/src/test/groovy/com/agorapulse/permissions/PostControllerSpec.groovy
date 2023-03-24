@@ -21,11 +21,9 @@ import com.agorapulse.gru.Gru
 import io.micronaut.test.annotation.MicronautTest
 import spock.lang.AutoCleanup
 import spock.lang.Specification
-import spock.lang.Stepwise
 
 import javax.inject.Inject
 
-@Stepwise
 @MicronautTest
 @SuppressWarnings([
     'BuilderMethodWithSideEffects',
@@ -33,7 +31,16 @@ import javax.inject.Inject
 ])
 class PostControllerSpec extends Specification {
 
+    private static final String AUTH_ID_1 = '1'
+    private static final String AUTH_ID_2 = '2'
+    private static final String HELLO_MESSAGE = 'Hello'
+
     @Inject @AutoCleanup Gru gru
+    @Inject PostRepository postRepository
+
+    void cleanup() {
+        postRepository.clean()
+    }
 
     void 'create post without any auth'() {
         expect:
@@ -62,35 +69,10 @@ class PostControllerSpec extends Specification {
             }
     }
 
-    void 'create post with same auth'() {
-        expect:
-            gru.test {
-                post '/post', {
-                    headers 'X-User-Id': '1'
-                    json message: 'Hello'
-                }
-                expect {
-                    status CREATED
-                    json 'newPost2.json'
-                }
-            }
-    }
-
-    void 'create post with another auth'() {
-        expect:
-            gru.test {
-                post '/post', {
-                    headers 'X-User-Id': '2'
-                    json message: 'Hello'
-                }
-                expect {
-                    status CREATED
-                    json 'newPostOtherAuth.json'
-                }
-            }
-    }
-
     void 'publish post without any auth'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
         expect:
             gru.test {
                 put '/post/1'
@@ -102,10 +84,13 @@ class PostControllerSpec extends Specification {
     }
 
     void 'publish post'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
         expect:
             gru.test {
                 put '/post/1', {
-                    headers 'X-User-Id': '1'
+                    headers 'X-User-Id': AUTH_ID_1
                 }
                 expect {
                     json 'publishedPost.json'
@@ -114,10 +99,13 @@ class PostControllerSpec extends Specification {
     }
 
     void 'publish post with wrong auth'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
         expect:
             gru.test {
                 put '/post/1', {
-                    headers 'X-User-Id': '3'
+                    headers 'X-User-Id': AUTH_ID_2
                 }
                 expect {
                     status UNAUTHORIZED
@@ -127,6 +115,9 @@ class PostControllerSpec extends Specification {
     }
 
     void 'archive post without any auth'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
         expect:
             gru.test {
                 delete '/post/1'
@@ -138,6 +129,9 @@ class PostControllerSpec extends Specification {
     }
 
     void 'archive post'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
         expect:
             gru.test {
                 delete '/post/1', {
@@ -150,11 +144,14 @@ class PostControllerSpec extends Specification {
     }
 
     void 'merge posts with one not allowed'() {
+        given:
+            postRepository.save(Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE))
+            postRepository.save(Post.createDraft(AUTH_ID_2.toLong(), HELLO_MESSAGE))
         expect:
             gru.test {
                 post '/post/merge', {
                     headers 'X-User-Id': '1'
-                    json id1: '1', id2: '3'
+                    json id1: '1', id2: '2'
                 }
                 expect {
                     status UNAUTHORIZED
@@ -164,6 +161,9 @@ class PostControllerSpec extends Specification {
     }
 
     void 'merge posts'() {
+        given:
+            postRepository.save(Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE))
+            postRepository.save(Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE))
         expect:
             gru.test {
                 post '/post/merge', {
@@ -177,10 +177,10 @@ class PostControllerSpec extends Specification {
             }
     }
 
-    void 'handle null collection'() {
+    void 'handle null iterable container'() {
         expect:
             gru.test {
-                post '/post/handle-collection', {
+                post '/post/handle-iterable-container', {
                     headers 'X-User-Id': '1'
                     json ids: null
                 }
@@ -190,10 +190,10 @@ class PostControllerSpec extends Specification {
             }
     }
 
-    void 'handle empty collection'() {
+    void 'handle empty iterable container'() {
         expect:
             gru.test {
-                post '/post/handle-collection', {
+                post '/post/handle-iterable-container', {
                     headers 'X-User-Id': '1'
                     json ids: []
                 }
@@ -203,12 +203,15 @@ class PostControllerSpec extends Specification {
             }
     }
 
-    void 'handle collection containing one not allowed'() {
+    void 'handle iterable containing one not allowed'() {
+        given:
+            postRepository.save(Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE))
+            postRepository.save(Post.createDraft(AUTH_ID_2.toLong(), HELLO_MESSAGE))
         expect:
             gru.test {
-                post '/post/handle-collection', {
+                post '/post/handle-iterable-container', {
                     headers 'X-User-Id': '1'
-                    json ids: [1, 3]
+                    json ids: [1, 2]
                 }
                 expect {
                     status UNAUTHORIZED
@@ -216,12 +219,27 @@ class PostControllerSpec extends Specification {
             }
     }
 
-    void 'handle collection containing only allowed'() {
+    void 'handle iterable container containing only allowed'() {
+        given:
+            postRepository.save(Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE))
+            postRepository.save(Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE))
         expect:
             gru.test {
-                post '/post/handle-collection', {
+                post '/post/handle-iterable-container', {
                     headers 'X-User-Id': '1'
                     json ids: [1, 2]
+                }
+                expect {
+                    status OK
+                }
+            }
+    }
+
+    void 'ignore non iterable container'() {
+        expect:
+            gru.test {
+                get '/post/handle-non-iterable-container', {
+                    headers 'X-User-Id': '1'
                 }
                 expect {
                     status OK

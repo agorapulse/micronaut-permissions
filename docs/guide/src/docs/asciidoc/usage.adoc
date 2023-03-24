@@ -28,6 +28,8 @@ The permission can be any `String`. The semantics are given by the implementatio
 For methods with multiple arguments, every argument must pass verification by the defined  <<_permission_advisors, permission advisor>>.
 There must be a <<_permission_advisors, permission advisor>> defined for at least one of the arguments.
 
+It is possible to validate a typed Iterable argument, <<_permission_advisors, permission advisor>> will apply to all of its items based on their type defined in method signature.
+
 [[_permission_advisors]]
 == Permission Advisors
 
