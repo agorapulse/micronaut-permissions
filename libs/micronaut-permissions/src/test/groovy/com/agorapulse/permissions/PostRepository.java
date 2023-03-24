@@ -24,7 +24,7 @@ import java.util.Map;
 @Singleton
 public class PostRepository {
 
-    private final Map<Long, Post> posts = new HashMap<>();
+    private Map<Long, Post> posts = new HashMap<>();
     private long counter;
 
     public Post save(Post post) {
@@ -37,6 +37,11 @@ public class PostRepository {
 
     public Post get(Long id) {
         return posts.get(id);
+    }
+
+    public void clean() {
+        posts = new HashMap<>();
+        counter = 0;
     }
 
 }

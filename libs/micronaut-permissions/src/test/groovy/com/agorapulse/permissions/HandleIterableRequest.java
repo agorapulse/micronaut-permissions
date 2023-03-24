@@ -17,16 +17,16 @@
  */
 package com.agorapulse.permissions;
 
-import java.util.Collection;
+import java.util.List;
 
-public class HandleCollectionRequest {
-    private Collection<Long> ids;
+public class HandleIterableRequest {
+    private List<Long> ids;
 
-    public Collection<Long> getIds() {
+    public List<Long> getIds() {
         return ids;
     }
 
-    public void setIds(Collection<Long> ids) {
+    public void setIds(List<Long> ids) {
         this.ids = ids;
     }
 }

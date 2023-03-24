@@ -36,7 +36,7 @@ public class DefaultPermissionChecker implements PermissionChecker {
     @SuppressWarnings("unchecked")
     @Override
     public <T> PermissionCheckResult checkPermission(String permissionDefinition, T value, Argument<T> valueType) {
-        if (valueType.isContainerType() && valueType.hasTypeVariables()) {
+        if (Iterable.class.isAssignableFrom(valueType.getType()) && valueType.hasTypeVariables()) {
             return checkPermissionOnContainer(permissionDefinition, (Iterable<Object>) value, (Argument<Iterable<Object>>) valueType);
         }
 

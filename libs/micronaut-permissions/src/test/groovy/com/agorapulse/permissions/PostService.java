@@ -19,6 +19,7 @@ package com.agorapulse.permissions;
 
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Map;
 
 @Singleton
 public class PostService {
@@ -36,8 +37,13 @@ public class PostService {
     }
 
     @RequiresPermission("edit")
-    public void handleCollection(Collection<Post> posts) {
+    public void handleIterableContainer(Collection<Post> posts) {
     }
+
+    @RequiresPermission("edit")
+    public void handleContainerNonIterable(Post post, Map<String, String> couldBeIterableContainer) {
+    }
+
 
     @RequiresPermission("edit")
     public Post publish(Post post) {

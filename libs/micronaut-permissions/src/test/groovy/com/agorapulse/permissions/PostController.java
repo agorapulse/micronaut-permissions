@@ -24,6 +24,7 @@ import io.micronaut.http.annotation.Error;
 import io.micronaut.http.hateoas.JsonError;
 
 import javax.annotation.Nullable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,13 +64,21 @@ public class PostController {
         return postRepository.save(mergedPost);
     }
 
-    @io.micronaut.http.annotation.Post("/handle-collection")
-    public void handleCollection(@Body HandleCollectionRequest handleCollectionRequest) {
-        List<Post> posts = handleCollectionRequest.getIds() != null ? handleCollectionRequest.getIds()
+    @io.micronaut.http.annotation.Post("/handle-iterable-container")
+    public void handleIterableContainer(@Body HandleIterableRequest handleIterableRequest) {
+        List<Post> posts = handleIterableRequest.getIds() != null ? handleIterableRequest.getIds()
             .stream()
             .map(postRepository::get)
             .collect(Collectors.toList()) : null;
-        postService.handleCollection(posts);
+        postService.handleIterableContainer(posts);
+    }
+
+    @Get("/handle-non-iterable-container")
+    public void handleContainerNonIterable() {
+        Post post = postService.create(1L, "message");
+        LinkedHashMap<String, String> nonIterableContainer = new LinkedHashMap<>();
+        nonIterableContainer.put("test", "test");
+        postService.handleContainerNonIterable(post, nonIterableContainer);
     }
 
     // tag::error[]
