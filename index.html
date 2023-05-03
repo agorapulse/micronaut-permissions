@@ -92,7 +92,7 @@ $(addBlockSwitches);
 <h1>Micronaut Permissions Library</h1>
 <div class="details">
 <span id="author" class="author">Vladimir Orany</span><br>
-<span id="revnumber">version 1.0.5-micronaut-3.0</span>
+<span id="revnumber">version 1.1.0-micronaut-3.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -123,7 +123,7 @@ $(addBlockSwitches);
 }
 
 dependencies {
-    implementation 'com.agorapulse:micronaut-permissions:1.0.5-micronaut-3.0'
+    implementation 'com.agorapulse:micronaut-permissions:1.1.0-micronaut-3.0'
 }</code></pre>
 </div>
 </div>
@@ -214,6 +214,12 @@ import java.util.Map;
 @Singleton
 public class PostService {
 
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
+
     public Post create(Long userId, String message) {
         if (userId == null || userId == 0) {
             throw new IllegalArgumentException("User not specified");
@@ -240,6 +246,16 @@ public class PostService {
         return post.publish();
     }
 
+    @ResultRequiresPermission(value = "view")                                           <i class="conum" data-value="2"></i><b>(2)</b>
+    public Post get(Long id) {
+        return postRepository.get(id);
+    }
+
+    @ResultRequiresPermission(value = "view", returnNull = true)                        <i class="conum" data-value="3"></i><b>(3)</b>
+    public Post getOrEmpty(Long id) {
+        return postRepository.get(id);
+    }
+
     @RequiresPermission("read")
     public Post merge(Long userId, Post post1, Post post2) {
         return Post.createDraft(userId, post1.getMessage() + post2.getMessage());
@@ -253,6 +269,14 @@ public class PostService {
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
 <td>Require permission <code>edit</code> on the <code>Post</code> object <code>post</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If you need to check the permissions on the returned object, use <code>@ResultRequiresPermission</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>You can use <code>@ResultRequiresPermission</code> with <code>returnNull = true</code> to return <code>null</code> instead of throwing exception effectively producing <code>NOT_FOUND</code> HTTP statuses in the controllers.</td>
 </tr>
 </table>
 </div>
@@ -329,7 +353,7 @@ public interface PermissionAdvisor&lt;T&gt; extends Ordered {
 <p>The following advisor will check if the current <code>User</code> is the author of the <code>Post</code> instance.</p>
 </div>
 <div class="listingblock">
-<div class="title">EditPostAdvisor.java</div>
+<div class="title">PostAdvisor.java</div>
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="java">import io.micronaut.core.type.Argument;
 
@@ -339,12 +363,12 @@ import java.util.List;
 import java.util.Objects;
 
 @Singleton
-public class EditPostAdvisor implements PermissionAdvisor&lt;Post&gt; {
+public class PostAdvisor implements PermissionAdvisor&lt;Post&gt; {
 
     private final UserProvider provider;
-    private final static List&lt;String&gt; PERMISSIONS = Arrays.asList("edit", "read");
+    private final static List&lt;String&gt; PERMISSIONS = Arrays.asList("edit", "read", "view");
 
-    public EditPostAdvisor(UserProvider provider) {
+    public PostAdvisor(UserProvider provider) {
         this.provider = provider;
     }
 
@@ -578,8 +602,8 @@ public class AdministratorPostService {
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.5-micronaut-3.0<br>
-Last updated 2023-03-24 11:31:55 UTC
+Version 1.1.0-micronaut-3.0<br>
+Last updated 2023-05-03 15:44:14 UTC
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
