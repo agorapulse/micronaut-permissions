@@ -114,6 +114,63 @@ class PostControllerSpec extends Specification {
             }
     }
 
+    void 'view post without any auth'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
+        expect:
+            gru.test {
+                get '/post/1'
+                expect {
+                    status UNAUTHORIZED
+                    json 'viewFailed.json'
+                }
+            }
+    }
+
+    void 'view post with auth'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
+        expect:
+            gru.test {
+                get '/post/1', {
+                    headers 'X-User-Id': '1'
+                }
+                expect {
+                    json 'existingPost.json'
+                }
+            }
+    }
+
+    void 'view post or empty without any auth'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
+        expect:
+            gru.test {
+                get '/post/1/or-empty'
+                expect {
+                    status NOT_FOUND
+                }
+            }
+    }
+
+    void 'view post or empty with auth'() {
+        given:
+            Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)
+            postRepository.save(post)
+        expect:
+            gru.test {
+                get '/post/1/or-empty', {
+                    headers 'X-User-Id': '1'
+                }
+                expect {
+                    json 'existingPost.json'
+                }
+            }
+    }
+
     void 'archive post without any auth'() {
         given:
             Post post = Post.createDraft(AUTH_ID_1.toLong(), HELLO_MESSAGE)

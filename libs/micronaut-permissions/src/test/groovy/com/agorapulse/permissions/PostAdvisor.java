@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Objects;
 
 @Singleton
-public class EditPostAdvisor implements PermissionAdvisor<Post> {
+public class PostAdvisor implements PermissionAdvisor<Post> {
 
     private final UserProvider provider;
-    private final static List<String> PERMISSIONS = Arrays.asList("edit", "read");
+    private final static List<String> PERMISSIONS = Arrays.asList("edit", "read", "view");
 
-    public EditPostAdvisor(UserProvider provider) {
+    public PostAdvisor(UserProvider provider) {
         this.provider = provider;
     }
 

@@ -22,6 +22,8 @@ annotating the associated service methods with the `@RequiresPermissions` annota
 include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/PostService.java[lines=20..-1]
 ----
 <1> Require permission `edit` on the `Post` object `post`
+<2> If you need to check the permissions on the returned object, use `@ResultRequiresPermission`
+<3> You can use `@ResultRequiresPermission` with `returnNull = true` to return `null` instead of throwing exception effectively producing `NOT_FOUND` HTTP statuses in the controllers.
 
 The permission can be any `String`. The semantics are given by the implementation of the <<_permission_advisors, permission advisor>>.
 
@@ -44,10 +46,10 @@ TIP: `PermissionAdvisor` extends `Ordered` to support prioritizing one advisor o
 
 The following advisor will check if the current `User` is the author of the `Post` instance.
 
-.EditPostAdvisor.java
+.PostAdvisor.java
 [source,java]
 ----
-include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/EditPostAdvisor.java[lines=20..-1]
+include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/PostAdvisor.java[lines=20..-1]
 ----
 <1> Declare the type of the argument being verified
 <2> Return `UNKNOWN` if the status cannot be determined; the next advisor will be asked for the result
