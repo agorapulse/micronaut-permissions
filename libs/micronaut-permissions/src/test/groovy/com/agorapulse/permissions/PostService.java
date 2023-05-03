@@ -24,6 +24,12 @@ import java.util.Map;
 @Singleton
 public class PostService {
 
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
+
     public Post create(Long userId, String message) {
         if (userId == null || userId == 0) {
             throw new IllegalArgumentException("User not specified");
@@ -48,6 +54,16 @@ public class PostService {
     @RequiresPermission("edit")
     public Post publish(Post post) {
         return post.publish();
+    }
+
+    @ResultRequiresPermission(value = "view")                                           // <2>
+    public Post get(Long id) {
+        return postRepository.get(id);
+    }
+
+    @ResultRequiresPermission(value = "view", returnNull = true)                        // <3>
+    public Post getOrEmpty(Long id) {
+        return postRepository.get(id);
     }
 
     @RequiresPermission("read")

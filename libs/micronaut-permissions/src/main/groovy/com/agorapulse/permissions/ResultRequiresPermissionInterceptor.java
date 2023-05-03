@@ -42,8 +42,26 @@ public class ResultRequiresPermissionInterceptor implements MethodInterceptor<Ob
 
         String permissionString = annotation.getRequiredValue(String.class);
         Object value = context.proceed();
+
+        if (value == null) {
+            return null;
+        }
+
         Argument<Object> argument = context.getReturnType().asArgument();
         PermissionCheckResult result = permissionChecker.checkPermission(permissionString, value, argument);
+
+        boolean returnNull = annotation.get("returnNull", Boolean.class, Boolean.FALSE);
+
+        if (returnNull) {
+            switch (result) {
+                case DENY:
+                    return null;
+                case ALLOW:
+                    return value;
+                default:
+                    throw new PermissionException(permissionString, context.getTargetMethod(), "Cannot determine if the user has the permissions to perform operation");
+            }
+        }
 
         switch (result) {
             case DENY:

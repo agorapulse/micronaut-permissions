@@ -22,6 +22,8 @@ annotating the associated service methods with the `@RequiresPermissions` annota
 include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/PostService.java[lines=20..-1]
 ----
 <1> Require permission `edit` on the `Post` object `post`
+<2> If you need to check the permissions on the returned object, use `@ResultRequiresPermission`
+<3> You can use `@ResultRequiresPermission` with `returnNull = true` to return `null` instead of throwing exception effectively producing `NOT_FOUND` HTTP statuses in the controllers.
 
 The permission can be any `String`. The semantics are given by the implementation of the <<_permission_advisors, permission advisor>>.
 
@@ -29,15 +31,6 @@ For methods with multiple arguments, every argument must pass verification by th
 There must be a <<_permission_advisors, permission advisor>> defined for at least one of the arguments.
 
 It is possible to validate a typed Iterable argument, <<_permission_advisors, permission advisor>> will apply to all of its items based on their type defined in method signature.
-
-
-You can use `@ResultRequiresPermission` annotation if you want to apply the permissions check on the result of the method execution. Typical use case is the _view_ permission if fetching the object from the database is a relatively cheap operation, but you need to verify that the user have permission to view the object.
-
-.Using `@ResultRequiresPermission`
-[source,java]
-----
-include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/PostRepository.java[tags=result-requires-permission,indent=0]
-----
 
 [[_permission_advisors]]
 == Permission Advisors

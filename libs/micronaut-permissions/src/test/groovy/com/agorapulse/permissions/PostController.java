@@ -41,7 +41,12 @@ public class PostController {
 
     @Get("/{id}")
     public Post view(Long id) {
-        return postRepository.get(id);
+        return postService.get(id);
+    }
+
+    @Get("/{id}/or-empty")
+    public Post viewOrEmpty(Long id) {
+        return postService.getOrEmpty(id);
     }
 
     @Status(HttpStatus.CREATED)

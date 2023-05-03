@@ -35,12 +35,9 @@ public class PostRepository {
         return post;
     }
 
-    // tag::result-requires-permission[]
-    @ResultRequiresPermission("view")
     public Post get(Long id) {
         return posts.get(id);
     }
-    // end::result-requires-permission[]
 
     public void clean() {
         posts = new HashMap<>();

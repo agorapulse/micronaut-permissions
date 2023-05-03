@@ -44,4 +44,9 @@ public @interface ResultRequiresPermission {
      */
     String value();
 
+    /**
+     * @return <code>true</code> if the method should return <code>null</code> instead of throwing exception
+     */
+    boolean returnNull() default false;
+
 }

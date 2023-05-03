@@ -28,7 +28,7 @@ import java.util.Objects;
 public class PostAdvisor implements PermissionAdvisor<Post> {
 
     private final UserProvider provider;
-    private final static List<String> PERMISSIONS = Arrays.asList("edit", "read");
+    private final static List<String> PERMISSIONS = Arrays.asList("edit", "read", "view");
 
     public PostAdvisor(UserProvider provider) {
         this.provider = provider;
