@@ -247,4 +247,27 @@ class PostControllerSpec extends Specification {
             }
     }
 
+    void 'view post without any auth'() {
+        expect:
+            gru.test {
+                get '/post/1'
+                expect {
+                    status UNAUTHORIZED
+                    json 'viewFailed.json'
+                }
+            }
+    }
+
+    void 'view post with auth'() {
+        expect:
+            gru.test {
+                get '/post/1', {
+                    headers 'X-User-Id': '1'
+                }
+                expect {
+                    json 'existingPost.json'
+                }
+            }
+    }
+
 }

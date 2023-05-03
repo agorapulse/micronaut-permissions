@@ -39,6 +39,11 @@ public class PostController {
         this.postRepository = postRepository;
     }
 
+    @Get("/{id}")
+    public Post view(Long id) {
+        return postRepository.get(id);
+    }
+
     @Status(HttpStatus.CREATED)
     @io.micronaut.http.annotation.Post("/")
     public Post create(@Nullable @Header("X-User-Id") Long userId, String message) {

@@ -30,6 +30,15 @@ There must be a <<_permission_advisors, permission advisor>> defined for at leas
 
 It is possible to validate a typed Iterable argument, <<_permission_advisors, permission advisor>> will apply to all of its items based on their type defined in method signature.
 
+
+You can use `@ResultRequiresPermission` annotation if you want to apply the permissions check on the result of the method execution. Typical use case is the _view_ permission if fetching the object from the database is a relatively cheap operation, but you need to verify that the user have permission to view the object.
+
+.Using `@ResultRequiresPermission`
+[source,java]
+----
+include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/PostRepository.java[tags=result-requires-permission,indent=0]
+----
+
 [[_permission_advisors]]
 == Permission Advisors
 
@@ -44,10 +53,10 @@ TIP: `PermissionAdvisor` extends `Ordered` to support prioritizing one advisor o
 
 The following advisor will check if the current `User` is the author of the `Post` instance.
 
-.EditPostAdvisor.java
+.PostAdvisor.java
 [source,java]
 ----
-include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/EditPostAdvisor.java[lines=20..-1]
+include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/PostAdvisor.java[lines=20..-1]
 ----
 <1> Declare the type of the argument being verified
 <2> Return `UNKNOWN` if the status cannot be determined; the next advisor will be asked for the result
