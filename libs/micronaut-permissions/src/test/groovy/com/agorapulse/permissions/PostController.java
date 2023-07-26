@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Controller("/post")
 public class PostController {
 
-    private final PostService postService;
+    private final IPostService postService;
     private final PostRepository postRepository;
 
     public PostController(PostService postService, PostRepository postRepository) {
