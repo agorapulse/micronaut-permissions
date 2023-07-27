@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 
 @Singleton
-public class PostService {
+public class PostService implements IPostService {
 
     private final PostRepository postRepository;
 
@@ -30,6 +30,7 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
+    @Override
     public Post create(Long userId, String message) {
         if (userId == null || userId == 0) {
             throw new IllegalArgumentException("User not specified");
@@ -37,36 +38,35 @@ public class PostService {
         return Post.createDraft(userId, message);
     }
 
-    @RequiresPermission("edit")                                                         // <1>
+    @Override                                                  // <1>
     public Post archive(Post post) {
         return post.archive();
     }
 
-    @RequiresPermission("edit")
+    @Override
     public void handleIterableContainer(Collection<Post> posts) {
     }
 
-    @RequiresPermission("edit")
+    @Override
     public void handleContainerNonIterable(Post post, Map<String, String> couldBeIterableContainer) {
     }
 
-
-    @RequiresPermission("edit")
+    @Override
     public Post publish(Post post) {
         return post.publish();
     }
 
-    @ResultRequiresPermission(value = "view")                                           // <2>
+    @Override
     public Post get(Long id) {
         return postRepository.get(id);
     }
 
-    @ResultRequiresPermission(value = "view", returnNull = true)                        // <3>
+    @Override
     public Post getOrEmpty(Long id) {
         return postRepository.get(id);
     }
 
-    @RequiresPermission("read")
+    @Override
     public Post merge(Long userId, Post post1, Post post2) {
         return Post.createDraft(userId, post1.getMessage() + post2.getMessage());
     }
