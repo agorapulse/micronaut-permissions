@@ -24,4 +24,4 @@ jobs:
       - name: Publish GitHub Pages
         uses: eskatos/gradle-command-action@v2
         with:
-          arguments: -x groovydoc -x aggregateGroovydoc  gitPublishPush -Pversion=${{ steps.latest_version.outputs.latest_tag }}-micronaut-3.0 -Prelease=true -Dorg.ajoberstar.grgit.auth.username=${{ secrets.AGORAPULSE_BOT_PERSONAL_TOKEN }}
+          arguments: -x groovydoc -x aggregateGroovydoc  gitPublishPush -Pversion=${{ steps.latest_version.outputs.latest_tag }} -Prelease=true -Dorg.ajoberstar.grgit.auth.username=${{ secrets.AGORAPULSE_BOT_PERSONAL_TOKEN }}
