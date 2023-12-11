@@ -42,23 +42,21 @@ gradleEnterprise {
         termsOfServiceUrl = "https://gradle.com/terms-of-service"
         termsOfServiceAgree = "yes"
 
-        buildScanPublished { scan ->
-            file("scan-journal.log") << "${new Date()} - ${scan.buildScanId} - ${scan.buildScanUri}\n"
-        }
+        publishAlways()
     }
 }
 
 rootProject.name = 'micronaut-permissions-root'
 
 projects {
-    directories = ['libs', 'docs', 'examples']
+    directories = ['libs', 'docs']
 
     plugins {
         dir('docs') {
             id 'org.kordamp.gradle.guide'
             id 'org.ajoberstar.git-publish'
         }
-        dirs(['libs', 'examples']) {
+        dirs(['libs']) {
             id 'java-library'
             id 'groovy'
         }

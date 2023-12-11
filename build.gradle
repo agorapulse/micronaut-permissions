@@ -126,7 +126,7 @@ allprojects {
     }
 }
 
-projects {
+gradleProjects {
     subprojects {
         dirs(['libs', 'examples']) { Project subproject ->
             apply plugin: 'micronaut-compatibility'
@@ -157,10 +157,8 @@ projects {
 
             dependencies {
                 api platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
-                compile platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
                 implementation platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
                 compileOnly platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
-                testCompile platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
                 testImplementation platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
             }
 
