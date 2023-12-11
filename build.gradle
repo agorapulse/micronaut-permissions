@@ -94,6 +94,14 @@ config {
     }
 
     docs {
+        javadoc {
+            aggregate {
+                enabled = false
+            }
+            autoLinks {
+                enabled = false
+            }
+        }
         groovydoc {
             enabled = false
             aggregate {
