@@ -29,6 +29,7 @@ buildscript {
         classpath group: 'org.kordamp.gradle',          name: 'coveralls-gradle-plugin',        version: kordampPluginVersion
         classpath group: 'org.ajoberstar',              name: 'gradle-git-publish',             version: gitPublishPluginVersion
         classpath group: 'io.github.gradle-nexus',      name: 'publish-plugin',                 version: nexusPluginVersion
+        classpath group: 'io.micronaut.gradle',         name: 'micronaut-minimal-plugin',      version: micronautGradlePluginVersion
     }
 }
 
@@ -57,8 +58,8 @@ projects {
             id 'org.ajoberstar.git-publish'
         }
         dirs(['libs']) {
-            id 'java-library'
             id 'groovy'
+            id 'io.micronaut.minimal.library'
         }
     }
 }

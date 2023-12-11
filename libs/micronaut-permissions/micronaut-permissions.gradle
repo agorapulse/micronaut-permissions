@@ -16,29 +16,20 @@
  * limitations under the License.
  */
 dependencies {
-    annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
-    annotationProcessor "io.micronaut:micronaut-inject-java"
+    compileOnly "org.apache.groovy:groovy"
 
-    implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
     implementation "io.micronaut:micronaut-runtime"
-
-    compileOnly "org.codehaus.groovy:groovy:$groovyVersion"
-
-    testAnnotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
-    testAnnotationProcessor "io.micronaut:micronaut-inject-java"
-
-    testImplementation platform("io.micronaut:micronaut-bom:$micronautVersion")
 
     testImplementation "org.junit.jupiter:junit-jupiter-api"
     testImplementation "io.micronaut.test:micronaut-test-junit5"
-    testImplementation("org.spockframework:spock-core")
-    testImplementation "org.codehaus.groovy:groovy:$groovyVersion"
+    testImplementation "org.apache.groovy:groovy"
 
     testImplementation "io.micronaut:micronaut-inject-groovy"
     testImplementation "io.micronaut.test:micronaut-test-spock"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:5.5.0"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
 
-    testImplementation "com.agorapulse:gru-micronaut:0.9.3"
+    testImplementation "com.agorapulse:gru-micronaut:2.0.4"
     testImplementation "io.micronaut:micronaut-http-server-netty"
+    testImplementation "io.micronaut:micronaut-jackson-databind"
 }

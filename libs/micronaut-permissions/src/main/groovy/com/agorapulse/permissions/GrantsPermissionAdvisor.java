@@ -19,7 +19,7 @@ package com.agorapulse.permissions;
 
 import io.micronaut.core.type.Argument;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class GrantsPermissionAdvisor implements PermissionAdvisor<Object> {

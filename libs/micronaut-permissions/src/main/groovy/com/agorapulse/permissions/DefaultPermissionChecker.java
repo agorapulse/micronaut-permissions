@@ -20,7 +20,7 @@ package com.agorapulse.permissions;
 import io.micronaut.core.order.OrderUtil;
 import io.micronaut.core.type.Argument;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.List;
 
 @Singleton
