@@ -126,13 +126,22 @@ allprojects {
     }
 }
 
-projects {
+gradleProjects {
     subprojects {
-        dirs(['libs', 'examples']) { Project subproject ->
-            apply plugin: 'micronaut-compatibility'
+        dirs(['libs']) { Project subproject ->
+            micronaut {
+                importMicronautPlatform = true
+                testRuntime 'spock2'
+                processing {
+                    incremental false
+                }
+            }
 
-            sourceCompatibility = 1.8
-            targetCompatibility = 1.8
+            java {
+                toolchain {
+                    languageVersion = JavaLanguageVersion.of(17)
+                }
+            }
 
             repositories {
                 mavenCentral()
@@ -155,24 +164,13 @@ projects {
                 groovyOptions.forkOptions.jvmArgs.add('-Dgroovy.parameters=true')
             }
 
-            dependencies {
-                api platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
-                compile platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
-                implementation platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
-                compileOnly platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
-                testCompile platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
-                testImplementation platform("org.codehaus.groovy:groovy-bom:$groovyVersion")
-            }
-
             // useful for IntelliJ
             task cleanOut(type: Delete) {
                 delete file('out')
             }
 
             clean.dependsOn cleanOut
-        }
 
-        dir('libs') {
             processResources {
                 filesMatching('**/org.codehaus.groovy.runtime.ExtensionModule') {
                     filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [VERSION: version])
@@ -187,10 +185,6 @@ projects {
                 publishing {
                     enabled = true
                 }
-            }
-
-            dependencies {
-                testImplementation group: 'org.spockframework', name: 'spock-core', version: spockVersion
             }
         }
     }

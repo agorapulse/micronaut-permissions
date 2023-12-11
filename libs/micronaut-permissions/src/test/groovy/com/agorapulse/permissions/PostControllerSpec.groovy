@@ -18,11 +18,11 @@
 package com.agorapulse.permissions
 
 import com.agorapulse.gru.Gru
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import spock.lang.AutoCleanup
 import spock.lang.Specification
 
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @MicronautTest
 @SuppressWarnings([

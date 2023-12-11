@@ -19,7 +19,7 @@ package com.agorapulse.permissions;
 
 import io.micronaut.http.context.ServerRequestContext;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Optional;
 
 @Singleton                                                                              // <1>

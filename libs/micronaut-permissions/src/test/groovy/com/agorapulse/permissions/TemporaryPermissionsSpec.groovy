@@ -18,11 +18,11 @@
 package com.agorapulse.permissions
 
 import groovy.transform.CompileStatic
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.test.extensions.spock.annotation.MicronautTest
 import spock.lang.Specification
 
-import javax.inject.Inject
-import javax.inject.Singleton
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 
 @MicronautTest
 class TemporaryPermissionsSpec extends Specification {

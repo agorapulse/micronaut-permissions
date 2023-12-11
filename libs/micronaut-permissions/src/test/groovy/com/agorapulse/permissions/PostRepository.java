@@ -17,7 +17,7 @@
  */
 package com.agorapulse.permissions;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -17,7 +17,7 @@
  */
 package com.agorapulse.permissions;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * The exception is throw when there are missing permissions for a particular value.

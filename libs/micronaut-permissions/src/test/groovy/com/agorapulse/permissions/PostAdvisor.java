@@ -19,7 +19,7 @@ package com.agorapulse.permissions;
 
 import io.micronaut.core.type.Argument;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

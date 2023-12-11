@@ -17,7 +17,7 @@
  */
 package com.agorapulse.permissions;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class AdministratorPostService {
