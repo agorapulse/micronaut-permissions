@@ -107,5 +107,5 @@ The following example shows two options for temporarily disabling permission che
 ----
 include::{root-dir}/libs/micronaut-permissions/src/test/groovy/com/agorapulse/permissions/AdministratorPostService.java[lines=20..-1]
 ----
-<1> Annotate with `@GrantPermissions` to disable checks within the method body for the `post` object
+<1> Annotate with `@GrantPermissions` to disable checks within the method body for any objects, use `target` if you want to specify the object under permission test
 <2> Disable checks just for the limited scope with `TemporaryPermissions` object

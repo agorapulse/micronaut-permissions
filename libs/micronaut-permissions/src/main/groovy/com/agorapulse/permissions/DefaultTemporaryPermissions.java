@@ -48,4 +48,18 @@ public class DefaultTemporaryPermissions implements TemporaryPermissions {
         }
     }
 
+    @Override
+    public <T> T grantPermissions(Iterable<String> permissionStrings, Supplier<T> withPermissions) {
+        for (String permission : permissionStrings) {
+            temporaryPermissionsHolder.grantPermission(permission);
+        }
+
+        try {
+            return withPermissions.get();
+        } finally {
+            for (String permission : permissionStrings) {
+                temporaryPermissionsHolder.revokePermission(permission);
+            }
+        }
+    }
 }

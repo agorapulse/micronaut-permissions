@@ -74,6 +74,15 @@ class TemporaryPermissionsSpec extends Specification {
             tester.withPermissionOnSecondArgumentGranted(TESTER_1, TESTER_2) == PermissionCheckResult.UNKNOWN
     }
 
+    void 'with permission one result temporarily granted'() {
+        when:
+            temporaryPermissions.grantPermissions(PERMISSION_1) {
+                tester.withResultRequiresPermission(TESTER_1) == PermissionCheckResult.UNKNOWN
+            }
+        then:
+            noExceptionThrown()
+    }
+
 }
 
 @Singleton
@@ -107,6 +116,12 @@ class GrantPermissionsTester {
     @GrantsPermission(TemporaryPermissionsSpec.PERMISSION_2)
     PermissionCheckResult withPermissionTwoGranted(Object tested) {
         return withoutGranted(tested)
+    }
+
+    @ResultRequiresPermission(TemporaryPermissionsSpec.PERMISSION_1)
+    Object withResultRequiresPermission(Object tested) {
+        withoutGranted(tested)
+        return tested
     }
 
     PermissionCheckResult withoutGranted(Object tested) {

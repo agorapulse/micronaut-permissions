@@ -52,10 +52,14 @@ public class GrantsPermissionInterceptor implements MethodInterceptor<Object, Ob
                 .filter(StringUtils::isNotEmpty)
                 .collect(Collectors.toList());
 
+        if (targets.isEmpty()) {
+            return temporaryPermissions.grantPermissions(Arrays.asList(permissionStrings), (Supplier<Object>) context::proceed);
+        }
+
         List<Object> values = new ArrayList<>();
 
         for (Map.Entry<String, MutableArgumentValue<?>> e : context.getParameters().entrySet()) {
-            if (targets.isEmpty() || targets.contains(e.getKey())) {
+            if (targets.contains(e.getKey())) {
                 values.add(e.getValue().getValue());
             }
         }
