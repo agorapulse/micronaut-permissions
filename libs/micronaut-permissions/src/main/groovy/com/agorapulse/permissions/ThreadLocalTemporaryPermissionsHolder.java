@@ -28,8 +28,12 @@ import java.util.Set;
 class ThreadLocalTemporaryPermissionsHolder implements TemporaryPermissionsHolder {
 
     private final Map<String, Set<Object>> grantedPermissions = new HashMap<>();
+    private final Set<String> grantedForAll = new HashSet<>();
 
     public boolean isPermissionGranted(String permissionDefinition, Object value) {
+        if (grantedForAll.contains(permissionDefinition)) {
+            return true;
+        }
         if (!grantedPermissions.containsKey(permissionDefinition)) {
             return false;
         }
@@ -48,4 +52,15 @@ class ThreadLocalTemporaryPermissionsHolder implements TemporaryPermissionsHolde
 
         grantedPermissions.computeIfAbsent(permissionDefinition, d -> new HashSet<>()).remove(value);
     }
+
+    @Override
+    public void grantPermission(String permissionDefinition) {
+        grantedForAll.add(permissionDefinition);
+    }
+
+    @Override
+    public void revokePermission(String permissionDefinition) {
+        grantedForAll.remove(permissionDefinition);
+    }
+
 }

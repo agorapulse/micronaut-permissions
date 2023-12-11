@@ -25,6 +25,13 @@ import java.util.function.Supplier;
  */
 public interface TemporaryPermissions {
 
+    default <T> T grantPermissions(String permissionDefinition, Supplier<T> withPermissions) {
+        return grantPermissions(Collections.singleton(permissionDefinition), withPermissions);
+    }
+
+    <T> T grantPermissions(Iterable<String> permissionStrings, Supplier<T> withPermissions);
+
+
     default <T> T grantPermissions(String permissionDefinition, Object value, Supplier<T> withPermissions) {
         return grantPermissions(Collections.singleton(permissionDefinition), Collections.singleton(value), withPermissions);
     }
