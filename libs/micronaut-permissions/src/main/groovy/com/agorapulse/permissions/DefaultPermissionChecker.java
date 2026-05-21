@@ -65,8 +65,9 @@ public class DefaultPermissionChecker implements PermissionChecker {
         if (value == null) {
             return PermissionCheckResult.ALLOW;
         }
+        Argument<T> itemType = (Argument<T>) valueType.getTypeParameters()[0];
         for (T item : value) {
-            switch (checkPermission(permissionDefinition, item, valueType.getTypeParameters()[0])) {
+            switch (checkPermission(permissionDefinition, item, itemType)) {
                 case DENY:
                     return PermissionCheckResult.DENY;
                 case UNKNOWN:
