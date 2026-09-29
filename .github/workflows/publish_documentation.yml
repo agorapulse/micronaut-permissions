@@ -21,7 +21,14 @@ jobs:
         with:
           owner: agorapulse
           repo: micronaut-permissions
+      - uses: gradle/actions/setup-gradle@v6
       - name: Publish GitHub Pages
-        uses: eskatos/gradle-command-action@v2
-        with:
-          arguments: -x groovydoc -x aggregateGroovydoc  gitPublishPush -Pversion=${{ steps.latest_version.outputs.latest_tag }} -Prelease=true -Dorg.ajoberstar.grgit.auth.username=${{ secrets.AGORAPULSE_BOT_PERSONAL_TOKEN }}
+        # Was eskatos/gradle-command-action@v2 (archived, node16); `arguments:` moved to this run step.
+        env:
+          LATEST_TAG: ${{ steps.latest_version.outputs.latest_tag }}
+          GRGIT_AUTH_USERNAME: ${{ secrets.AGORAPULSE_BOT_PERSONAL_TOKEN }}
+        run: |
+          ./gradlew -x groovydoc -x aggregateGroovydoc gitPublishPush \
+            -Pversion="$LATEST_TAG" \
+            -Prelease=true \
+            -Dorg.ajoberstar.grgit.auth.username="$GRGIT_AUTH_USERNAME"
